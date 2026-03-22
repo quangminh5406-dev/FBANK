@@ -1,0 +1,11 @@
+C:\FBANK\SmartSavingPlanner\test_rates.py:11: FutureWarning: Passing literal html to 'read_html' is deprecated and will be removed in a future version. To read from a literal string, wrap it in a 'StringIO' object.
+  df = pd.read_html(r.text)[0]
+Raw columns: [('Ngân hàng', 'Ngân hàng'), ('Kỳ hạn gửi tiết kiệm (tháng)', 'Không Kỳ Hạn'), ('Kỳ hạn gửi tiết kiệm (tháng)', '01 tháng'), ('Kỳ hạn gửi tiết kiệm (tháng)', '03 tháng'), ('Kỳ hạn gửi tiết kiệm (tháng)', '06 tháng'), ('Kỳ hạn gửi tiết kiệm (tháng)', '09 tháng'), ('Kỳ hạn gửi tiết kiệm (tháng)', '12 tháng'), ('Kỳ hạn gửi tiết kiệm (tháng)', '13 tháng'), ('Kỳ hạn gửi tiết kiệm (tháng)', '18 tháng'), ('Kỳ hạn gửi tiết kiệm (tháng)', '24 tháng'), ('Kỳ hạn gửi tiết kiệm (tháng)', '36 tháng')]
+After flatten: ['Ngân hàng_Ngân hàng', 'Kỳ hạn gửi tiết kiệm (tháng)_Không Kỳ Hạn', 'Kỳ hạn gửi tiết kiệm (tháng)_01 tháng', 'Kỳ hạn gửi tiết kiệm (tháng)_03 tháng', 'Kỳ hạn gửi tiết kiệm (tháng)_06 tháng', 'Kỳ hạn gửi tiết kiệm (tháng)_09 tháng', 'Kỳ hạn gửi tiết kiệm (tháng)_12 tháng', 'Kỳ hạn gửi tiết kiệm (tháng)_13 tháng', 'Kỳ hạn gửi tiết kiệm (tháng)_18 tháng', 'Kỳ hạn gửi tiết kiệm (tháng)_24 tháng', 'Kỳ hạn gửi tiết kiệm (tháng)_36 tháng']
+Col mapping: {'Ngân hàng_Ngân hàng': 'bank', 'Kỳ hạn gửi tiết kiệm (tháng)_03 tháng': '3M', 'Kỳ hạn gửi tiết kiệm (tháng)_06 tháng': '6M', 'Kỳ hạn gửi tiết kiệm (tháng)_12 tháng': '12M', 'Kỳ hạn gửi tiết kiệm (tháng)_13 tháng': '3M', 'Kỳ hạn gửi tiết kiệm (tháng)_36 tháng': '6M'}
+C:\FBANK\SmartSavingPlanner\test_rates.py:35: FutureWarning: Series.__getitem__ treating keys as positions is deprecated. In a future version, integer keys will always be treated as labels (consistent with DataFrame behavior). To access a value by position, use `ser.iloc[pos]`
+  df[col] = df[col].apply(clean_pct)
+FINAL DF EMPTY? True
+Empty DataFrame
+Columns: [bank, 3M, 6M, 12M]
+Index: []

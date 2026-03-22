@@ -1,0 +1,7 @@
+streamlit
+pandas
+google-genai
+requests
+plotly
+lxml
+xlsxwriter

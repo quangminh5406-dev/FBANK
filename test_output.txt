@@ -1,0 +1,3 @@
+Cols: ['bank', '3M', '6M', '12M', '3M', '6M']
+Empty before dropna: False
+Empty after dropna: False

@@ -1,0 +1,12 @@
+.streamlit/
+__pycache__/
+*.pyc
+*.csv
+.env
+.venv
+venv/
+env/
+.devcontainer/
+.vscode/
+.idea/
+*.bat
