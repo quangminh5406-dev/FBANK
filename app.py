@@ -143,10 +143,10 @@ try:
     smtp_email = st.secrets["SMTP_EMAIL"]
     smtp_password = st.secrets["SMTP_PASSWORD"]
 except:
-    # Fallback cho chạy local nếu chưa cấu hình secrets.toml
-    gemini_api_key = "AIzaSyCnwpRXfhjqzM1_QguDP9r5IijaArX4yxM" 
+    gemini_api_key = "" 
     smtp_email = "minhtqcs200119@gmail.com" 
     smtp_password = "" 
+
 
 # --- 3. ROBUST LOGIC LAYER ---
 @st.cache_data(ttl=3600)
@@ -354,6 +354,10 @@ with tab_ai:
             duration = st.selectbox("KỲ HẠN CỐ ĐỊNH (THÁNG)", [3, 6, 12], index=2)
             pref = st.selectbox("KHẨU VỊ RỦI RO", ["Tối đa hóa Lợi nhuận (Tấn công)", "An toàn Thanh khoản (Thận trọng)", "Bảo toàn Danh mục Lõi (Phòng thủ)"])
             email_to = st.text_input("EMAIL NHẬN BÁO CÁO (TÙY CHỌN)")
+            st.markdown("---")
+            user_api_key = st.text_input("🔑 NHẬP GEMINI API KEY (BẮT BUỘC ĐỂ DÙNG AI)", type="password", help="Bảo mật: Mã khóa chỉ tồn tại trong phiên làm việc, không lưu trữ lên máy chủ.")
+            if user_api_key: gemini_api_key = user_api_key.strip()
+            
             st.write("")
             btn = st.button("🚀 KÍCH HOẠT THUẬT TOÁN", type="primary", use_container_width=True)
 
@@ -504,6 +508,10 @@ with tab_scenarios:
         with sc_col2:
             inflation_sc = st.slider("Dự báo Lạm phát Mục tiêu (CPI) (%)", 0.0, 10.0, 4.2)
             external_shock = st.selectbox("Điều kiện Thị trường Bên ngoài", ["Bình thường", "Suy thoái Toàn cầu", "Siêu chu kỳ Hàng hóa"])
+            
+        st.markdown("---")
+        user_sc_key = st.text_input("🔑 NHẬP GEMINI API KEY", type="password", key="sc_key")
+        if user_sc_key: gemini_api_key = user_sc_key.strip()
             
         simulate = st.button("⚡ THỰC THI MÔ PHỎNG", type="primary", use_container_width=True)
         
