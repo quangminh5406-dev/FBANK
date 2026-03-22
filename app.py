@@ -386,7 +386,7 @@ with tab_ai:
                             prompt = f"Phân tích hệ thống: Nhà đầu tư dự định phân bổ {amount:,.0f} VND vào {best['bank']} (Lợi suất {best['rate']}%) cho kỳ hạn {duration} tháng với khẩu vị rủi ro '{pref}'. Đóng vai trò là một chuyên gia phân tích tài chính (ngôn ngữ học thuật, trang trọng), hãy đưa ra một đánh giá chuyên môn ngắn gọn (2 câu) về cơ sở lý luận đằng sau việc phân bổ danh mục này bằng tiếng Việt."
                             ai_reply = client.models.generate_content(model='gemini-2.5-flash', contents=prompt).text
                             st.info(f"{ai_reply}")
-                        except: st.error("Mô-đun AI NLP bị chậm trễ do vấn đề kết nối hạ tầng.")
+                        except Exception as e: st.error(f"LỖI HỆ THỐNG AI: {str(e)}")
                 else: st.warning("API_KEY chưa được khai báo trong Cấu hình Hệ thống.")
                 
                 with st.expander("XUẤT MA TRẬN DỮ LIỆU THÔ"):
@@ -536,6 +536,6 @@ with tab_scenarios:
                         st.warning("⚠️ ĐÁNH GIÁ RỦI RO: CAO (PHÁT HIỆN BIẾN ĐỘNG MẠNH)")
                     else:
                         st.success("✅ ĐÁNH GIÁ RỦI RO: ỔN ĐỊNH")
-                except: st.error("Lỗi thời gian chờ của động cơ mô phỏng kịch bản.")
+                except Exception as e: st.error(f"LỖI HỆ THỐNG AI: {str(e)}")
         else:
             st.warning("Mô phỏng kịch bản AI yêu cầu Key API Gemini hợp lệ.")
