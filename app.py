@@ -18,25 +18,121 @@ st.set_page_config(page_title="FBANK - Financial Analytics", page_icon="🏦", l
 
 st.markdown("""
 <style>
-/* Professional Corporate Finance UI */
-.stApp { background-color: #0b1121; color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-.main-title { font-size: 2.2rem; font-weight: 700; color: #f8fafc; border-left: 6px solid #2563eb; padding-left: 16px; margin-bottom: 0.5rem; letter-spacing: 0.5px; text-transform: uppercase;}
-.sub-title { font-size: 0.95rem; color: #64748b; font-weight: 600; font-family: Consolas, monospace; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 2rem;}
-.stTabs [data-baseweb="tab-list"] { gap: 0px; border-bottom: 1px solid #1e293b; background: transparent; }
-.stTabs [data-baseweb="tab"] { font-size: 0.95rem; font-weight: 600; padding: 14px 28px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; border-radius: 0; background: transparent; }
-.stTabs [aria-selected="true"] { border-bottom: 3px solid #3b82f6 !important; color: #eff6ff !important; background: rgba(59, 130, 246, 0.05) !important; }
-.stButton>button { border-radius: 4px; font-weight: 600; height: 48px; font-size: 14px; letter-spacing: 1px; text-transform: uppercase; border: 1px solid #3b82f6; transition: all 0.2s; }
-.stButton>button:hover { background-color: #2563eb; color: white; border-color: #2563eb; }
-div[data-testid="stMetricValue"] { font-size: 1.8rem; font-weight: 700; color: #38bdf8; font-family: Consolas, monospace; }
-div[data-testid="stMetricLabel"] { font-size: 0.9rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;}
-.metric-container { border: 1px solid #1e293b; padding: 20px; border-radius: 8px; background: #0f172a; margin-bottom: 20px;}
-.logo-box { background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); width: 50px; height: 50px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 800; color: white; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* Hide Streamlit components */
+#MainMenu {visibility: hidden;}
+header {visibility: hidden;}
+footer {visibility: hidden;}
+
+/* Ultimate Premium Glassmorphism UI */
+.stApp { 
+    background: radial-gradient(circle at top left, #1e293b, #0f172a) !important; 
+    color: #f1f5f9; 
+    font-family: 'Inter', sans-serif; 
+}
+
+/* Beautiful Flowing Title */
+.main-title { 
+    font-size: 2.8rem; 
+    font-weight: 800; 
+    background: linear-gradient(90deg, #38bdf8, #818cf8, #c084fc);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.2rem;
+    letter-spacing: -0.5px;
+}
+.sub-title { 
+    font-size: 1rem; 
+    color: #94a3b8; 
+    font-weight: 500; 
+    letter-spacing: 1.5px; 
+    text-transform: uppercase; 
+    margin-bottom: 2rem;
+}
+
+/* Glassmorphism Tabs */
+.stTabs [data-baseweb="tab-list"] { 
+    gap: 15px; 
+    background: rgba(30, 41, 59, 0.4); 
+    padding: 10px 15px 0 15px;
+    border-radius: 16px 16px 0 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.stTabs [data-baseweb="tab"] { 
+    font-size: 1rem; 
+    font-weight: 600; 
+    padding: 12px 24px; 
+    color: #64748b; 
+    background: transparent;
+    border: none;
+    transition: all 0.3s ease;
+}
+.stTabs [data-baseweb="tab"]:hover {
+    color: #e2e8f0;
+}
+.stTabs [aria-selected="true"] { 
+    background: rgba(56, 189, 248, 0.15) !important; 
+    color: #38bdf8 !important; 
+    border-bottom: 3px solid #38bdf8 !important;
+    border-radius: 8px 8px 0 0;
+}
+
+/* Glowing Interactive Buttons */
+.stButton>button { 
+    background: linear-gradient(135deg, #3b82f6 0%, #4f46e5 100%);
+    border: none;
+    border-radius: 8px; 
+    font-weight: 600; 
+    height: 52px; 
+    color: white;
+    font-size: 15px; 
+    letter-spacing: 0.5px; 
+    text-transform: uppercase; 
+    transition: all 0.3s ease; 
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+}
+.stButton>button:hover { 
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 0 8px 25px rgba(79, 70, 229, 0.6);
+    background: linear-gradient(135deg, #2563eb 0%, #4338ca 100%);
+}
+
+/* Animated Metrics & Glass Containers */
+div[data-testid="stMetricValue"] { font-size: 2.2rem; font-weight: 800; color: #f8fafc; font-family: 'Inter', sans-serif; letter-spacing: -1px; }
+div[data-testid="stMetricLabel"] { font-size: 0.95rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;}
+
+.metric-container {
+    background: rgba(30, 41, 59, 0.4) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 16px !important;
+    padding: 24px !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2) !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.metric-container:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.4) !important;
+    border-color: rgba(56, 189, 248, 0.4) !important;
+}
+
+/* App Logo Styling */
+.logo-box { 
+    background: linear-gradient(135deg, #38bdf8 0%, #4f46e5 100%); 
+    width: 60px; height: 60px; 
+    border-radius: 14px; display: flex; align-items: center; justify-content: center; 
+    font-size: 32px; font-weight: 800; color: white; 
+    box-shadow: 0 8px 20px rgba(79, 70, 229, 0.4); 
+}
 </style>
-<div style="display: flex; align-items: center; gap: 20px;">
+
+<div style="display: flex; align-items: center; gap: 24px; margin-bottom: 20px;">
     <div class="logo-box">F</div>
     <div>
-        <div class="main-title">FBANK: SMART FINANCIAL ECOSYSTEM</div>
-        <div class="sub-title">Cơ chế Phân tích Vĩ mô AI & Cơ sở Dữ liệu Thời gian thực</div>
+        <div class="main-title">FBANK ECOSYSTEM</div>
+        <div class="sub-title">Premium AI Analytics & Live Market Engine</div>
     </div>
 </div>
 """, unsafe_allow_html=True)
