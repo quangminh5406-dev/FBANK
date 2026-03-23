@@ -4,9 +4,7 @@ import requests
 import xml.etree.ElementTree as ET
 import plotly.express as px
 from google import genai
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+
 import urllib3
 import os
 import io
@@ -140,12 +138,8 @@ div[data-testid="stMetricLabel"] { font-size: 0.95rem; color: #94a3b8; font-weig
 # --- 2. CẤU HÌNH API DƯỚI NỀN (STREAMLIT SECRETS) ---
 try:
     gemini_api_key = st.secrets["GEMINI_API_KEY"]
-    smtp_email = st.secrets["SMTP_EMAIL"]
-    smtp_password = st.secrets["SMTP_PASSWORD"]
 except:
     gemini_api_key = "" 
-    smtp_email = "minhtqcs200119@gmail.com" 
-    smtp_password = "" 
 
 
 # --- 3. ROBUST LOGIC LAYER ---
@@ -240,22 +234,12 @@ def get_auto_forecast(news_list, api_key):
         client = genai.Client(api_key=api_key)
         rep = client.models.generate_content(model='gemini-2.5-flash', contents=f"Phân tích ngắn gọn các tin tức sau: {context}. Đóng vai trò là một chuyên gia phân tích tài chính vĩ mô, hãy trình bày dự báo (khoảng 3-4 dòng) bằng ngôn ngữ tiếng Việt, tông giọng học thuật, khách quan về xu hướng lãi suất điều hành và đưa ra 1 lời khuyên về chiến lược phân bổ vốn.")
         return rep.text
-    except: return "Lỗi hệ thống truy xuất máy học."
+    except Exception as e:
+        if "429" in str(e):
+            return "⏳ AI đang quá tải lượt gọi (Vượt giới hạn miễn phí). Vui lòng thử lại sau 1 phút."
+        return f"Lỗi hệ thống truy xuất máy học: {str(e)}"
 
-def send_email(to_email, body):
-    if not smtp_email or not smtp_password: return
-    try:
-        msg = MIMEMultipart()
-        msg['From'] = smtp_email
-        msg['To'] = to_email
-        msg['Subject'] = "BÁO CÁO CHIẾN LƯỢC ĐẦU TƯ TÍCH LŨY (FBANK AI)"
-        msg.attach(MIMEText(body, 'plain'))
-        server = smtplib.SMTP('smtp.gmail.com', 587)
-        server.starttls()
-        server.login(smtp_email, smtp_password)
-        server.sendmail(smtp_email, to_email, msg.as_string())
-        server.quit()
-    except: pass
+
 
 # --- 5. PORTFOLIO PERSISTENCE LAYER ---
 PORTFOLIO_FILE = "portfolio.csv"
@@ -352,18 +336,17 @@ with tab_ai:
         with st.container(border=True):
             amount = st.number_input("VỐN ĐẦU TƯ (VND)", min_value=1000000, value=500000000, step=50000000, format="%d")
             duration = st.selectbox("KỲ HẠN CỐ ĐỊNH (THÁNG)", [3, 6, 12], index=2)
-            pref = st.selectbox("KHẨU VỊ RỦI RO", ["Tối đa hóa Lợi nhuận (Tấn công)", "An toàn Thanh khoản (Thận trọng)", "Bảo toàn Danh mục Lõi (Phòng thủ)"])
-            email_to = st.text_input("EMAIL NHẬN BÁO CÁO (TÙY CHỌN)")
+            pref = "Tối đa hóa Lợi nhuận"
             st.markdown("---")
-            user_api_key = st.text_input("🔑 NHẬP GEMINI API KEY (BẮT BUỘC ĐỂ DÙNG AI)", type="password", help="Bảo mật: Mã khóa chỉ tồn tại trong phiên làm việc, không lưu trữ lên máy chủ.")
-            if user_api_key: gemini_api_key = user_api_key.strip()
             
             st.write("")
             btn = st.button("🚀 KÍCH HOẠT THUẬT TOÁN", type="primary", use_container_width=True)
+            if btn:
+                st.session_state.analyze_clicked = True
 
     with c_output:
         st.markdown("#### 📑 BÁO CÁO ĐƯỢC TẠO")
-        if btn:
+        if st.session_state.get('analyze_clicked', False):
             rates = load_live_rates()
             d_col = f"{duration}M"
             
@@ -390,18 +373,15 @@ with tab_ai:
                             prompt = f"Phân tích hệ thống: Nhà đầu tư dự định phân bổ {amount:,.0f} VND vào {best['bank']} (Lợi suất {best['rate']}%) cho kỳ hạn {duration} tháng với khẩu vị rủi ro '{pref}'. Đóng vai trò là một chuyên gia phân tích tài chính (ngôn ngữ học thuật, trang trọng), hãy đưa ra một đánh giá chuyên môn ngắn gọn (2 câu) về cơ sở lý luận đằng sau việc phân bổ danh mục này bằng tiếng Việt."
                             ai_reply = client.models.generate_content(model='gemini-2.5-flash', contents=prompt).text
                             st.info(f"{ai_reply}")
-                        except Exception as e: st.error(f"LỖI HỆ THỐNG AI: {str(e)}")
+                        except Exception as e:
+                            if "429" in str(e):
+                                st.warning("⏳ Giới hạn API Miễn phí: Google đang quá tải vì bạn gọi liên tục (Quá 15 lượt/phút). Bạn đợi đúng 1 phút rồi ấn nút chạy lại nhé!")
+                            else:
+                                st.error(f"LỖI HỆ THỐNG AI: {str(e)}")
                 else: st.warning("API_KEY chưa được khai báo trong Cấu hình Hệ thống.")
                 
                 with st.expander("XUẤT MA TRẬN DỮ LIỆU THÔ"):
                     st.dataframe(df[['bank', 'rate', 'fv']].head(10).rename(columns={'bank':'Tên Tổ chức', 'rate': 'Lợi suất %/Năm', 'fv': 'Giá trị Tích lũy (VND)'}), hide_index=True, width="stretch")
-                
-                if email_to:
-                    if not smtp_email or not smtp_password:
-                        st.warning("⚠️ Cảnh báo: Tính năng Email tự động bị ngắt kết nối. Bạn cần cấu hình thông tin Người gửi (smtp_email & smtp_password) trực tiếp trong app.py.")
-                    else:
-                        send_email(email_to, f"HỆ THỐNG TÀI CHÍNH THÔNG MINH FBANK\n\n- Phân bổ Danh mục: {best['bank']}\n- Lợi nhuận Gộp Dự kiến: {best['fv'] - amount:,.0f} VND\n\nĐÁNH GIÁ CHUYÊN GIA AI:\n{ai_reply if gemini_api_key else 'N/A'}")
-                        st.success("Tác vụ điều hướng (Push-Email) đã thực hiện thành công.")
                 
                 if st.button("📥 XÁC NHẬN VÀO SỔ CÁI (TÀI SẢN CỐ ĐỊNH)", use_container_width=True):
                     add_deposit(best['bank'], amount, duration, best['rate'])
@@ -510,8 +490,6 @@ with tab_scenarios:
             external_shock = st.selectbox("Điều kiện Thị trường Bên ngoài", ["Bình thường", "Suy thoái Toàn cầu", "Siêu chu kỳ Hàng hóa"])
             
         st.markdown("---")
-        user_sc_key = st.text_input("🔑 NHẬP GEMINI API KEY", type="password", key="sc_key")
-        if user_sc_key: gemini_api_key = user_sc_key.strip()
             
         simulate = st.button("⚡ THỰC THI MÔ PHỎNG", type="primary", use_container_width=True)
         
@@ -544,6 +522,10 @@ with tab_scenarios:
                         st.warning("⚠️ ĐÁNH GIÁ RỦI RO: CAO (PHÁT HIỆN BIẾN ĐỘNG MẠNH)")
                     else:
                         st.success("✅ ĐÁNH GIÁ RỦI RO: ỔN ĐỊNH")
-                except Exception as e: st.error(f"LỖI HỆ THỐNG AI: {str(e)}")
+                except Exception as e:
+                    if "429" in str(e):
+                        st.warning("⏳ Giới hạn API Miễn phí: Google đang quá tải vì bạn gọi liên tục (Quá 15 lượt/phút). Bạn đợi đúng 1 phút rồi thử kịch bản lại nhé!")
+                    else:
+                        st.error(f"LỖI HỆ THỐNG AI: {str(e)}")
         else:
             st.warning("Mô phỏng kịch bản AI yêu cầu Key API Gemini hợp lệ.")
